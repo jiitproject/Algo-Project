@@ -163,7 +163,7 @@ void save_user(const string &username, const string &password)
 }
 void Welcome_window()
 {
-    cout<<"\t\t\t\t\t\tWelcome to our Travel Agency\n\n\n\n\n\n\n\n";
+    cout<<"\t\t\t\t\t\tWelcome to our Metro System\n\n\n\n\n\n\n\n";
     cout<<"\t\t\t\t\t\tThe Agency is managed by: \n\n\n\n\n";
     cout<<"\t\t\t\t\t\t\t\tVeenit Kumar\n\n";
     cout<<"\t\t\t\t\t\t\t\tHarshal Tyagi\n\n";
@@ -230,6 +230,89 @@ class Graph
                 des=des1;
             }
         }
+    void printAllPaths(string s, string d,int rate)
+        {
+            map<string,bool> visited;
+            for(auto it=adjList.begin();it!=adjList.end();it++)
+            {
+                visited[it->first]=false;
+            }
+            string *path = new string[V];
+            int path_index = 0;
+            printAllPathsUtil(s, d, visited, path, path_index,0,0,rate);
+        }
+    void Dijkstras(string src,string des,int rate)
+        {
+            /*to print the path having the shortest distance*/
+            map<string ,float > distance;
+            map<string, int> conditions;
+            map<string,string> parent;
+            for(auto it=adjList.begin();it!=adjList.end();it++)
+            {
+                distance[it->first]=INT_MAX;
+            }
+            distance[src]=0;
+            conditions[src]=0;
+            priority_queue<Pair,vector<Pair>, myComparator> Q;
+            Pair P(src,distance[src],conditions[src]);
+            Q.push(P);
+            string last;
+            while(!Q.empty())
+            {
+                Pair Temp=Q.top();
+                Q.pop();
+                string u=Temp.destination;last=Temp.destination;
+                for(auto it=adjList[u].begin();it!=adjList[u].end();it++)
+                {
+                    Pair f = *it;
+                    string v = f.destination;
+                    float w = f.dist;
+                    int cond=f.condition;
+                    if(distance[u]+w<distance[v])
+                    {
+                        parent[v]=u;
+                        distance[v]=distance[u]+w;
+                        conditions[v]=conditions[u]+cond;
+                        Pair L(v,distance[v],conditions[v]);
+                        Q.push(L);
+                    }
+                }
+            }
+            if(distance[des]==INT_MAX)
+            {
+                cout<<"\n\n\n\n\n\n\n";
+                cout<<"\t\t\t\t\tNo Path between the source and the destination Exists, Sorry for the Inconvenience";
+                exit(0);
+            }
+            cout<<"-----------------------------------SHORTEST ROUTE BETWEEN THE SORCE AND DESTINATION-----------------------------------"<<endl;
+            cout<<endl;
+            cout<<endl;
+            cout<<"\t\t\tThe shortest distance between "<<src<<" and "<<des<< " is : "<<distance[des]<<" KM"<<endl;
+            cout<<endl;
+            cout<<endl;
+            cout<<"\t\t\tThe cost of Travel Inclusive of Taxes : Rs "<<distance[des]*rate<<endl;
+            cout<<endl;
+            cout<<endl;
+            cout<<"\t\t\tThe path Of the Shortest Route is: "<<endl;
+            cout<<endl;
+            cout<<endl;
+            cout<<"\t\t\t";
+            string k=des;
+            cout<<k<<"<--";
+            while(parent[k].compare(src)!=0)
+            {
+                cout<<parent[k]<<" <--";
+                k=parent[k];
+            }
+            cout<<src;
+            cout<<endl;
+            cout<<endl;
+            if(conditions[des]<=-1)
+                cout<<"\t\t\tThe travel conditions are Bad"<<endl;
+            else if(conditions[des]==0)
+            cout<<"\t\t\tThe travel conditions are Normal"<<endl;
+            else cout<<"\t\t\tThe travel conditions are Good"<<endl;
+        }
 };
 int main()
 {
@@ -272,13 +355,13 @@ int main()
     cout<<endl;
     cout<<endl;
     cout<<endl;
-    cout<<"-----------------------THE LIST OF CITIES THAT THE AGENCY MANAGES ARE---------------------------";
+    cout<<"-----------------------THE LIST OF STATIONS---------------------------";
     Sleep(1000);
     cout<<endl;
     cout<<endl;
     cout<<endl;
     g.print();
-    cout<<"\t\t\tEnter the City from the list above:\t";
+    cout<<"\t\t\tEnter the Source station from the list above:\t";
     string src;
     cin>>src;
     cin.ignore();
@@ -305,5 +388,25 @@ int main()
     cout<<endl;
     cout<<endl;
     cout<<endl;
+    cout<<"\n\n\n\n\n\n\n\n\n\n\n\n";
+    for(int i=0;i<10;i++)
+    {
+        cout<<"\t\t\t\t\t\t\t\t";
+        for(int k=9-i;k>=0;k--)
+            cout<<" ";
+        for(int j=1;j<=i;j++)
+        {
+            cout<<"*"<<" ";
+            Sleep(50);
+        }
+        cout<<endl;
+    }
+    g.Dijkstras(src, dest, 5);
+            cout<<"\n\n-----------------------------------ALL ROUTES FROM SOURCE TO DESTINATION--------------------------------------"<<endl;
+            cout<<endl;
+            cout<<endl;
+            cout<<endl;
+            g.printAllPaths(src,dest,5);
+            break;
     return 0;
 }
